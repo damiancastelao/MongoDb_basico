@@ -1,3 +1,6 @@
+// Create.kt
+// Muestra cómo insertar documentos (uno o varios) en la colección
+
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -7,6 +10,7 @@ import kotlin.random.Random
 
 fun main() {
     runBlocking {
+        // Conecta y ejecuta las operaciones de inserción
         setupConnection()?.let { db: MongoDatabase ->
             addItem(database = db)
             addItems(database = db)
@@ -14,9 +18,11 @@ fun main() {
     }
 }
 
+// Inserta un único documento de restaurante
 suspend fun addItem(database: MongoDatabase) {
 
     val collection = database.getCollection<Restaurant>(collectionName = "restaurants")
+    // Crea un objeto Restaurant con datos aleatorios
     val item = Restaurant(
         id = ObjectId(),
         address = Address(
@@ -36,14 +42,18 @@ suspend fun addItem(database: MongoDatabase) {
         restaurantId = "restaurantId"
     )
 
+    // insertOne inserta un solo documento
     collection.insertOne(item).also {
         println("Item added with id - ${it.insertedId}")
     }
 
 }
 
+// Inserta múltiples documentos a la vez
 suspend fun addItems(database: MongoDatabase) {
     val collection = database.getCollection<Restaurant>(collectionName = "restaurants")
+    
+    // Toma el primer restaurante existente como plantilla para crear nuevos
     val newRestaurants = collection.find<Restaurant>().first().run {
         listOf(
             this.copy(
@@ -57,9 +67,8 @@ suspend fun addItems(database: MongoDatabase) {
         )
     }
 
+    // insertMany inserta una lista de documentos de forma eficiente
     collection.insertMany(newRestaurants).also {
         println("Total items added ${it.insertedIds.size}")
     }
 }
-
-

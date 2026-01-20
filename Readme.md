@@ -1,146 +1,126 @@
-# Getting Started With the MongoDB Kotlin Driver
+# Empezando con el Driver de MongoDB para Kotlin
+#### Adaptación del artículo original
 
-> This is an introductory article on how to build an application in Kotlin using [MongoDB Atlas](https://www.mongodb.com/atlas/database) and
-> the [MongoDB Kotlin driver](https://github.com/mongodb-developer/kotlin-driver-quick-start), the latest addition to our list of official drivers.
-> Together, we'll build a CRUD application that covers the basics of how to use MongoDB as a database, while leveraging the benefits of Kotlin as a
-> programming language, like data classes, coroutines, and flow.
+> Este es un artículo introductorio sobre cómo construir una aplicación en Kotlin usando [MongoDB Atlas](https://www.mongodb.com/atlas/database) y
+> el [Driver de MongoDB para Kotlin](https://github.com/mongodb-developer/kotlin-driver-quick-start), la última incorporación a nuestra lista de drivers oficiales.
+> Es una aplicación CRUD que cubre los conceptos básicos de cómo usar MongoDB como base de datos, aprovechando los beneficios de Kotlin como
+> lenguaje de programación, como data classes, coroutines y flow.
+> En este enlace está la documentación completa del driver [Documentación Driver](https://www.mongodb.com/docs/drivers/kotlin/coroutine/current/)
 
-## Prerequisites
+## Prerrequisitos
 
-This is a getting-started article. Therefore, not much is needed as a prerequisite, but familiarity with Kotlin as a programming language will be
-helpful.
+Este es un artículo de introducción. Por lo tanto, no se necesita mucho como prerrequisito, pero la familiaridad con Kotlin como lenguaje de programación será
+útil.
 
-Also, we need an [Atlas account](https://www.mongodb.com/cloud/atlas/register), which is free forever. Create an account if you haven't got one. This
-provides MongoDB as a cloud database and much more. Later in this tutorial, we'll use this account to create a new cluster, load a dataset, and
-eventually query against it.
+Además, necesitamos una [cuenta de Atlas](https://www.mongodb.com/cloud/atlas/register), que es gratuita para siempre. Crea una cuenta si no tienes una. Esto
+proporciona MongoDB como una base de datos en la nube y mucho más. Más adelante en este tutorial, usaremos esta cuenta para crear un nuevo clúster, cargar un conjunto de datos y
+finalmente realizar consultas sobre él.
 
-In general, MongoDB is an open-source, cross-platform, and distributed document database that allows building apps with flexible schema. In case you
-are not familiar with it or would like a quick recap, I recommend exploring
-the [MongoDB Jumpstart series](https://www.youtube.com/watch?v=RGfFpQF0NpE&list=PL4RCxklHWZ9v2lcat4oEVGQhZg6r4IQGV) to get familiar with MongoDB and
-its various services in under 10 minutes. Or if you prefer to read, then you can follow
-our [guide](https://www.mongodb.com/docs/atlas/getting-started/).
+En general, MongoDB es una base de datos de documentos distribuida, multiplataforma y de código abierto que permite crear aplicaciones con esquemas flexibles. En caso de que
+no estés familiarizado con ella o desees un resumen rápido, recomiendo explorar
+la [serie MongoDB Jumpstart](https://www.youtube.com/watch?v=RGfFpQF0NpE&list=PL4RCxklHWZ9v2lcat4oEVGQhZg6r4IQGV) para familiarizarte con MongoDB y
+sus diversos servicios en menos de 10 minutos. O si prefieres leer, puedes seguir
+nuestra [guía](https://www.mongodb.com/docs/atlas/getting-started/).
 
-And last, to aid our development activities, we will be using [Jetbrains IntelliJ IDEA (Community Edition)](https://www.jetbrains.com/idea/download/),
-which has default support for the Kotlin language.
+Y por último, para ayudar en nuestras actividades de desarrollo, usaremos [Jetbrains IntelliJ IDEA (Community Edition)](https://www.jetbrains.com/idea/download/),
+que tiene soporte predeterminado para el lenguaje Kotlin.
 
-## MongoDB Kotlin driver vs MongoDB Realm Kotlin SDK
-
-Before we start, I would like to touch base on [Realm Kotlin SDK](https://www.mongodb.com/docs/realm/sdk/kotlin/), one of the SDKs used to create
-client-side mobile applications using the MongoDB ecosystem. It shouldn't be confused with
-the [MongoDB Kotlin driver](https://www.mongodb.com/docs/drivers/kotlin/coroutine/current/) for server-side programming.
-The [MongoDB Kotlin driver](https://www.mongodb.com/docs/drivers/kotlin/coroutine/current/), a language driver, enables you to seamlessly interact
-with [Atlas](https://www.mongodb.com/atlas/database), a cloud database, with the benefits of the Kotlin language paradigm. It's appropriate to create
-backend apps, scripts, etc.
-
-To make learning more meaningful and practical, we'll be building a CRUD application. Feel free to check out our
-[Github repo](https://github.com/mongodb-developer/kotlin-driver-quick-start) if you would like to follow along together. So, without further ado,
-let's get started.
-
-## Create a project
-
-To create the project, we can use the project wizard, which can be found under the `File` menu options. Then, select `New`, followed by `Project`.
-This will open the `New Project` screen, as shown below, then update the project and language to Kotlin.
-
-![Project wizard](https://images.contentstack.io/v3/assets/blt39790b633ee0d5a7/bltbce8e7adda583e3e/648793838b23a5b3d5052b69/Screenshot_2023-06-12_at_09.34.09.png)
-
-After the initial Gradle sync, our project is ready to run. So, let's give it a try using the run icon in the menu bar, or simply press CTRL + R on
-Mac. Currently, our project won't do much apart from printing `Hello World!` and arguments supplied, but the `BUILD SUCCESSFUL` message in the run
-console is what we're looking for, which tells us that our project setup is complete.
+Después de la sincronización inicial de Gradle, nuestro proyecto está listo para ejecutarse. Así que, probémoslo usando el icono de ejecución en la barra de menú, o simplemente presiona CTRL + R en
+Mac. Actualmente, nuestro proyecto no hará mucho aparte de imprimir `Hello World!` y los argumentos suministrados, pero el mensaje `BUILD SUCCESSFUL` en la consola de ejecución
+es lo que estamos buscando, lo que nos dice que la configuración de nuestro proyecto está completa.
 
 ![build success](https://images.contentstack.io/v3/assets/blt39790b633ee0d5a7/blt97a67a3d4a402196/64879383d40ad08ec16808a9/Screenshot_2023-06-12_at_13.42.38.png)
 
-Now, the next step is to add the Kotlin driver to our project, which allows us to interact
-with [MongoDB Atlas](https://www.mongodb.com/atlas/database).
+Ahora, el siguiente paso es agregar el driver de Kotlin a nuestro proyecto, lo que nos permite interactuar
+con [MongoDB Atlas](https://www.mongodb.com/atlas/database).
 
-## Adding the MongoDB Kotlin driver
+## Agregando el Driver de MongoDB para Kotlin
 
-Adding the driver to the project is simple and straightforward. Just update the `dependencies` block with the Kotlin driver dependency in the build
-file — i.e., `build.gradle`.
+Agregar el driver al proyecto es simple y directo. Solo actualiza el bloque `dependencies` con la dependencia del driver de Kotlin en el archivo de construcción
+— es decir, `build.gradle`.
 
 ```groovy
 dependencies {
-    // Kotlin coroutine dependency
+    // Dependencia de corrutinas de Kotlin
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 
-    // MongoDB Kotlin driver dependency
+    // Dependencia del driver de MongoDB para Kotlin
     implementation("org.mongodb:mongodb-driver-kotlin-coroutine:4.10.1")
+    
+    // Dependencia para leer archivos .env
+    implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
 }
 ```
 
-And now, we are ready to connect with [MongoDB Atlas](https://www.mongodb.com/atlas/database) using the Kotlin driver.
+Y ahora, estamos listos para conectarnos con [MongoDB Atlas](https://www.mongodb.com/atlas/database) usando el driver de Kotlin.
 
-## Connecting to the database
+## Conectando a la base de datos
 
-To connect with the database, we first need the `Connection URI` that can be found by pressing `connect to cluster` in
-our [Atlas account](https://www.mongodb.com/cloud/atlas/register), as shown below.
+Para conectarnos con la base de datos, primero necesitamos la `Connection URI` que se puede encontrar presionando `connect to cluster` en
+nuestra [cuenta de Atlas](https://www.mongodb.com/cloud/atlas/register), como se muestra a continuación.
 
 ![image](https://images.contentstack.io/v3/assets/blt39790b633ee0d5a7/blt1d92c6f1c6654b04/648c2ff42429af5fa2f487e4/atlas_connection_copy_string_kotlin.png)
 
-For more details, you can also refer to our [documentation](https://www.mongodb.com/docs/guides/atlas/connection-string/).
+Para más detalles, también puedes consultar nuestra [documentación](https://www.mongodb.com/docs/guides/atlas/connection-string/).
 
-With the connection URI available, the next step is to create a Kotlin file. `Setup.kt` is where we write the code for connecting
-to [MongoDB Atlas](https://www.mongodb.com/atlas/database).
+Con la URI de conexión disponible, el siguiente paso es crear un archivo Kotlin. `Setup.kt` es donde escribimos el código para conectarnos
+a [MongoDB Atlas](https://www.mongodb.com/atlas/database).
 
 ![Setup.kt file](https://images.contentstack.io/v3/assets/blt39790b633ee0d5a7/bltdc533d1983ce2f87/6488261e8b23a52669052cee/Screenshot_2023-06-13_at_09.17.29.png)
 
-Connection with our database can be split into two steps. First, we create a MongoClient instance using `Connection URI`.
+La conexión con nuestra base de datos se puede dividir en dos pasos. Primero, creamos una instancia de MongoClient usando la `Connection URI`.
 
 ```kotlin
 val connectionString = "mongodb+srv://<username>:<enter your password>@cluster0.sq3aiau.mongodb.net/?retryWrites=true&w=majority"
 val client = MongoClient.create(connectionString = connectString)
 ```
 
-And second, use client to connect with the database, `sample_restaurants`, which is a sample dataset for
-restaurants. A [sample dataset](https://www.mongodb.com/docs/atlas/sample-data/) is a great way to explore the platform and build a more realistic POC
-to validate your ideas. To learn how to seed your first Atlas database with sample
-data, [visit the docs](https://www.mongodb.com/docs/atlas/sample-data/).
+Y segundo, usamos el cliente para conectarnos con la base de datos, `sample_restaurants`, que es un conjunto de datos de muestra para
+restaurantes. Un [conjunto de datos de muestra](https://www.mongodb.com/docs/atlas/sample-data/) es una excelente manera de explorar la plataforma y construir una POC más realista
+para validar tus ideas. Para aprender cómo poblar tu primera base de datos Atlas con datos de muestra,
+[visita la documentación](https://www.mongodb.com/docs/atlas/sample-data/).
 
 ```kotlin
 val databaseName = "sample_restaurants"
 val db: MongoDatabase = client.getDatabase(databaseName = databaseName)
 ```
 
-Hardcoding `connectionString` isn't a good approach and can lead to security risks or an inability to provide role-based access. To avoid such issues
-and follow the best practices, we will be using environment variables. Other common approaches are the use of Vault, build configuration variables,
-and CI/CD environment variables.
+Codificar la `connectionString` no es un buen enfoque y puede llevar a riesgos de seguridad o a la incapacidad de proporcionar acceso basado en roles. Para evitar tales problemas
+y seguir las mejores prácticas, usaremos variables de entorno. Otros enfoques comunes son el uso de Vault, variables de configuración de compilación,
+y variables de entorno de CI/CD.
 
-To add environment variables, use `Modify run configuration`, which can be found by right-clicking on the file.
+### Configuración con .env (Recomendado para desarrollo local)
 
-![add environment variable](https://images.contentstack.io/v3/assets/blt39790b633ee0d5a7/blt8438bbb2ace0979e/64882bac83c7fb1a685f3d1b/Screenshot_2023-06-13_at_09.38.49.png)
+Para facilitar el desarrollo local sin exponer credenciales, hemos configurado el proyecto para usar un archivo `.env`.
 
-Together with code to access the environment variable, our final code looks like this.
+1.  Crea un archivo llamado `.env` en la raíz del proyecto (este archivo está ignorado por git).
+2.  Añade tus credenciales en el archivo `.env`:
+
+```env
+MONGODB_USER=tu_usuario_real
+MONGODB_PASSWORD=tu_contraseña_real
+# Opcional: MONGODB_URI=mongodb+srv://...
+```
+
+El código se encargará de leer estas variables automáticamente. Si estás en un entorno de CI/CD (como GitHub Actions), el código leerá las variables de entorno del sistema si no encuentra el archivo `.env`.
 
 ```kotlin
 suspend fun setupConnection(
-    databaseName: String = "sample_restaurants",
-    connectionEnvVariable: String = "MONGODB_URI"
+    databaseName: String? = null
 ): MongoDatabase? {
-    val connectString = if (System.getenv(connectionEnvVariable) != null) {
-        System.getenv(connectionEnvVariable)
-    } else {
-        "mongodb+srv://<usename>:<password>@cluster0.sq3aiau.mongodb.net/?retryWrites=true&w=majority"
+    val dotenv = dotenv {
+        ignoreIfMissing = true
     }
-
-    val client = MongoClient.create(connectionString = connectString)
-    val database = client.getDatabase(databaseName = databaseName)
-
-    return try {
-        // Send a ping to confirm a successful connection
-        val command = Document("ping", BsonInt64(1))
-        database.runCommand(command)
-        println("Pinged your deployment. You successfully connected to MongoDB!")
-        database
-    } catch (me: MongoException) {
-        System.err.println(me)
-        null
-    }
+    
+    // Intenta leer de .env, si no existe, lee del sistema
+    val user = dotenv["MONGODB_USER"] ?: System.getenv("MONGODB_USER")
+    val password = dotenv["MONGODB_PASSWORD"] ?: System.getenv("MONGODB_PASSWORD")
+    
+    // ... lógica de conexión ...
 }
 ```
 
-> In the code snippet above, we still have the ability to use a hardcoded string. This is only done for demo purposes, allowing you to use a
-> connection URI directly for ease and to run this via any online editor. But it is strongly recommended to avoid hardcoding a connection URI.
-
-With the `setupConnection` function ready, let's test it and query the database for the collection count and name.
+Con la función `setupConnection` lista, probémosla y consultemos la base de datos para el recuento y nombre de la colección.
 
 ```kotlin
 suspend fun listAllCollection(database: MongoDatabase) {
@@ -153,17 +133,16 @@ suspend fun listAllCollection(database: MongoDatabase) {
 }
 ```
 
-Upon running that code, our output looks like this:
+Al ejecutar ese código, nuestra salida se ve así:
 
 ![list collection output](https://images.contentstack.io/v3/assets/blt39790b633ee0d5a7/blt5a670a8008abba48/648835185953929729a04668/Screenshot_2023-06-13_at_10.21.15.png)
 
-By now, you may have noticed that we are using the `suspend` keyword with `listAllCollection()`. `listCollectionNames()` is an asynchronous function
-as it interacts with the database and therefore would ideally run on a different thread. And since the MongoDB Kotlin driver
-supports [Coroutines](https://kotlinlang.org/docs/coroutines-guide.html), the
-native [Kotlin asynchronous language paradigm](https://kotlinlang.org/docs/async-programming.html), we can benefit from it by using `suspend`
-functions.
+A estas alturas, es posible que hayas notado que estamos usando la palabra clave `suspend` con `listAllCollection()`. `listCollectionNames()` es una función asíncrona
+ya que interactúa con la base de datos y, por lo tanto, idealmente se ejecutaría en un hilo diferente. Y dado que el driver de MongoDB para Kotlin
+soporta [Coroutines](https://kotlinlang.org/docs/coroutines-guide.html), el
+paradigma nativo de [lenguaje asíncrono de Kotlin](https://kotlinlang.org/docs/async-programming.html), podemos beneficiarnos de él usando funciones `suspend`.
 
-Similarly, to drop collections, we use the `suspend` function.
+De manera similar, para eliminar colecciones, usamos la función `suspend`.
 
 ```kotlin
 suspend fun dropCollection(database: MongoDatabase) {
@@ -171,8 +150,8 @@ suspend fun dropCollection(database: MongoDatabase) {
 }
 ```
 
-With this complete, we are all set to start working on our CRUD application. So to start with, we need to create a `data` class that represents
-restaurant information that our app saves into the database.
+Con esto completo, estamos listos para comenzar a trabajar en nuestra aplicación CRUD. Así que para empezar, necesitamos crear una `data` class que represente
+la información del restaurante que nuestra aplicación guarda en la base de datos.
 
 ```kotlin
 data class Restaurant(
@@ -201,19 +180,19 @@ data class Grade(
 )
 ```
 
-In the above code snippet, we used two annotations:
+En el fragmento de código anterior, usamos dos anotaciones:
 
-1. `@BsonId`, which represents the unique identity or `_id` of a document.
-2. `@BsonProperty`, which creates an alias for keys in the document — for example, `restaurantId` represents `restaurant_id`.
+1. `@BsonId`, que representa la identidad única o `_id` de un documento.
+2. `@BsonProperty`, que crea un alias para las claves en el documento — por ejemplo, `restaurantId` representa `restaurant_id`.
 
-> Note: Our `Restaurant` data class here is an exact replica of a restaurant document in the sample dataset, but a few fields can be skipped or marked
-> as optional — e.g., `grades` and `address` — while maintaining the ability to perform CRUD operations. We are able to do so, as MongoDB’s document
-> model allows flexible schema for our data.
+> Nota: Nuestra data class `Restaurant` aquí es una réplica exacta de un documento de restaurante en el conjunto de datos de muestra, pero algunos campos pueden omitirse o marcarse
+> como opcionales — por ejemplo, `grades` y `address` — manteniendo la capacidad de realizar operaciones CRUD. Podemos hacerlo, ya que el modelo de documento de MongoDB
+> permite un esquema flexible para nuestros datos.
 
-## Create
+## Crear
 
-With all the heavy lifting done (10 lines of code for connecting), adding a new document to the database is really simple and can be done with one
-line of code using `insertOne`. So, let's create a new file called `Create.kt`, which will contain all the create operations.
+Con todo el trabajo pesado hecho (10 líneas de código para conectar), agregar un nuevo documento a la base de datos es realmente simple y se puede hacer con una
+línea de código usando `insertOne`. Así que, creemos un nuevo archivo llamado `Create.kt`, que contendrá todas las operaciones de creación.
 
 ```kotlin
 suspend fun addItem(database: MongoDatabase) {
@@ -244,13 +223,13 @@ suspend fun addItem(database: MongoDatabase) {
 }
 ```
 
-When we run it, the output on the console is:
+Cuando lo ejecutamos, la salida en la consola es:
 
 ![insert one](https://images.contentstack.io/v3/assets/blt39790b633ee0d5a7/blt1d124cbfb185d7d6/648ae0b2359ef0161360df47/Screenshot_2023-06-15_at_10.49.33.png)
 
-> Again, don't forget to add an environment variable again for this file, if you had trouble while running it.
+> De nuevo, no olvides agregar una variable de entorno nuevamente para este archivo, si tuviste problemas al ejecutarlo.
 
-If we want to add multiple documents to the collection, we can use `insertMany`, which is recommended over running `insertOne` in a loop.
+Si queremos agregar múltiples documentos a la colección, podemos usar `insertMany`, que se recomienda sobre ejecutar `insertOne` en un bucle.
 
 ```kotlin
 suspend fun addItems(database: MongoDatabase) {
@@ -277,20 +256,20 @@ suspend fun addItems(database: MongoDatabase) {
 
 ![Insert many output](https://images.contentstack.io/v3/assets/blt39790b633ee0d5a7/blt02fc3f33de844c88/648ae1ce2c4f87306c1b12ce/Screenshot_2023-06-15_at_11.02.48.png)
 
-With these outputs on the console, we can say that the data has been added successfully.
+Con estas salidas en la consola, podemos decir que los datos se han agregado con éxito.
 
-But what if we want to see the object in the database? One way is with a read operation, which we would do shortly or
-use [MongoDB Compass](https://www.mongodb.com/products/compass) to view the information.
+¿Pero qué pasa si queremos ver el objeto en la base de datos? Una forma es con una operación de lectura, que haremos en breve o
+usar [MongoDB Compass](https://www.mongodb.com/products/compass) para ver la información.
 
-[MongoDB Compass](https://www.mongodb.com/products/compass) is a free, interactive GUI tool for querying, optimizing, and analyzing the MongoDB data
-from your system. To get started, [download](https://www.mongodb.com/try/download/shell) the tool and use the `connectionString` to connect with the
-database.
+[MongoDB Compass](https://www.mongodb.com/products/compass) es una herramienta GUI interactiva y gratuita para consultar, optimizar y analizar los datos de MongoDB
+desde tu sistema. Para empezar, [descarga](https://www.mongodb.com/try/download/shell) la herramienta y usa la `connectionString` para conectarte con la
+base de datos.
 
-![MongoDB compass](https://images.contentstack.io/v3/assets/blt39790b633ee0d5a7/blt72fd049dd230ea55/648ae40e1fb2d38f0e495940/Screenshot_2023-06-15_at_11.12.23.png)
+![MongoDB compass](https://images.contentstack.io/v3/assets/blt72fd049dd230ea55/648ae40e1fb2d38f0e495940/Screenshot_2023-06-15_at_11.12.23.png)
 
-## Read
+## Leer
 
-To read the information from the database, we can use the `find` operator. Let's begin by reading any document.
+Para leer la información de la base de datos, podemos usar el operador `find`. Comencemos leyendo cualquier documento.
 
 ```kotlin
 val collection = database.getCollection<Restaurant>(collectionName = "restaurants")
@@ -299,10 +278,10 @@ collection.find<Restaurant>().limit(1).collect {
 }
 ```
 
-The `find` operator returns a list of results, but since we are only interested in a single document, we can use the `limit` operator in conjunction
-to limit our result set. In this case, it would be a single document.
+El operador `find` devuelve una lista de resultados, pero como solo estamos interesados en un solo documento, podemos usar el operador `limit` en conjunto
+para limitar nuestro conjunto de resultados. En este caso, sería un solo documento.
 
-If we extend this further and want to read a specific document, we can add filter parameters over the top of it:
+Si extendemos esto más y queremos leer un documento específico, podemos agregar parámetros de filtro sobre él:
 
 ```kotlin
 val queryParams = Filters
@@ -314,7 +293,7 @@ val queryParams = Filters
     )
 ```
 
-Or, we can use any of the operators from our [list](https://www.mongodb.com/docs/manual/reference/operator/query/). The final code looks like this.
+O, podemos usar cualquiera de los operadores de nuestra [lista](https://www.mongodb.com/docs/manual/reference/operator/query/). El código final se ve así.
 
 ```kotlin
 suspend fun readSpecificDocument(database: MongoDatabase) {
@@ -338,14 +317,13 @@ suspend fun readSpecificDocument(database: MongoDatabase) {
 }
 ```
 
-For the output, we see this:
+Para la salida, vemos esto:
 
 ![read specific doc output](https://images.contentstack.io/v3/assets/blt39790b633ee0d5a7/bltd837ac1a039ae43f/648ae83f0f2d9b551eed55e2/Screenshot_2023-06-15_at_11.30.20.png)
 
-> Don't forget to add the environment variable again for this file, if you had trouble while running it.
+> No olvides agregar la variable de entorno nuevamente para este archivo, si tuviste problemas al ejecutarlo.
 
-Another practical use case that comes with a read operation is how to add pagination to the results. This can be done with the `limit` and `offset`
-operators.
+Otro caso de uso práctico que viene con una operación de lectura es cómo agregar paginación a los resultados. Esto se puede hacer con los operadores `limit` y `offset`.
 
 ```kotlin
 suspend fun readWithPaging(database: MongoDatabase, offset: Int, pageSize: Int) {
@@ -368,8 +346,8 @@ suspend fun readWithPaging(database: MongoDatabase, offset: Int, pageSize: Int) 
 }
 ```
 
-But with this approach, often, the query response time increases with value of the `offset`. To overcome this, we can benefit by creating an `Index`,
-as shown below.
+Pero con este enfoque, a menudo, el tiempo de respuesta de la consulta aumenta con el valor del `offset`. Para superar esto, podemos beneficiarnos creando un `Index`,
+como se muestra a continuación.
 
 ```kotlin
 val collection = database.getCollection<Restaurant>(collectionName = "restaurants")
@@ -384,32 +362,32 @@ collection.createIndex(
 )
 ```
 
-## Update
+## Actualizar
 
-Now, let's discuss how to edit/update an existing document. Again, let's quickly create a new Kotlin file, `Update.Kt`.
+Ahora, discutamos cómo editar/actualizar un documento existente. De nuevo, creemos rápidamente un nuevo archivo Kotlin, `Update.Kt`.
 
-In general, there are two ways of updating any document:
+En general, hay dos formas de actualizar cualquier documento:
 
-* Perform an **update** operation, which allows us to update specific fields of the matching documents without impacting the other fields.
-* Perform a **replace** operation to replace the matching document with the new document.
+* Realizar una operación de **actualización**, que nos permite actualizar campos específicos de los documentos coincidentes sin afectar los otros campos.
+* Realizar una operación de **reemplazo** para reemplazar el documento coincidente con el nuevo documento.
 
-For this exercise, we'll use the document we created earlier with the create operation `{restaurant_id: "restaurantId"}` and update
-the `restaurant_id` with a more realistic value. Let's split this into two sub-tasks for clarity.
+Para este ejercicio, usaremos el documento que creamos anteriormente con la operación de creación `{restaurant_id: "restaurantId"}` y actualizaremos
+el `restaurant_id` con un valor más realista. Dividamos esto en dos subtareas para mayor claridad.
 
-First, using `Filters`, we query to filter the document, similar to the read operation earlier.
+Primero, usando `Filters`, consultamos para filtrar el documento, similar a la operación de lectura anterior.
 
 ```kotlin
 val collection = db.getCollection<Restaurant>("restaurants")
 val queryParam = Filters.eq("restaurant_id", "restaurantId")
 ```
 
-Then, we can set the `restaurant_id` with a random integer value using `Updates`.
+Luego, podemos establecer el `restaurant_id` con un valor entero aleatorio usando `Updates`.
 
 ```kotlin
 val updateParams = Updates.set("restaurant_id", Random.nextInt().toString())
 ```
 
-And finally, we use `updateOne` to update the document in an atomic operation.
+Y finalmente, usamos `updateOne` para actualizar el documento en una operación atómica.
 
 ```kotlin
 collection.updateOne(filter = queryParam, update = updateParams).also {
@@ -417,12 +395,12 @@ collection.updateOne(filter = queryParam, update = updateParams).also {
 }
 ```
 
-In the above example, we were already aware of which document we wanted to update — the restaurant with an id `restauratantId` — but there could be a
-few use cases where that might not be the situation. In such cases, we would first look up the document and then update it. `findOneAndUpdate` can be
-handy. It allows you to combine both of these processes into an atomic operation, unlocking additional performance.
+En el ejemplo anterior, ya sabíamos qué documento queríamos actualizar — el restaurante con un id `restauratantId` — pero podría haber
+algunos casos de uso donde esa no sea la situación. En tales casos, primero buscaríamos el documento y luego lo actualizaríamos. `findOneAndUpdate` puede ser
+útil. Te permite combinar ambos procesos en una operación atómica, desbloqueando un rendimiento adicional.
 
-Another variation of the same could be updating multiple documents with one call. `updateMany` is useful for such use cases — for example, if we want
-to update the `cuisine` of all restaurants to your favourite type of cuisine and `borough` to Brooklyn.
+Otra variación de lo mismo podría ser actualizar múltiples documentos con una sola llamada. `updateMany` es útil para tales casos de uso — por ejemplo, si queremos
+actualizar la `cuisine` de todos los restaurantes a tu tipo de cocina favorito y `borough` a Brooklyn.
 
 ```kotlin
 suspend fun updateMultipleDocuments(db: MongoDatabase) {
@@ -439,16 +417,16 @@ suspend fun updateMultipleDocuments(db: MongoDatabase) {
 }
 ```
 
-In these examples, we used `set` and `combine` with `Updates`. But there are many more types of update operator to explore that allow us to do many
-intuitive operations, like set the currentDate or timestamp, increase or decrease the value of the field, and so on. To learn more about the different
-types of update operators you can perform with Kotlin and MongoDB, refer to
-our [docs](https://mongodb.github.io/mongo-java-driver/4.9/apidocs/mongodb-driver-core/com/mongodb/client/model/Updates.html).
+En estos ejemplos, usamos `set` y `combine` con `Updates`. Pero hay muchos más tipos de operadores de actualización para explorar que nos permiten hacer muchas
+operaciones intuitivas, como establecer la fecha actual o la marca de tiempo, aumentar o disminuir el valor del campo, y así sucesivamente. Para aprender más sobre los diferentes
+tipos de operadores de actualización que puedes realizar con Kotlin y MongoDB, consulta
+nuestra [documentación](https://mongodb.github.io/mongo-java-driver/4.9/apidocs/mongodb-driver-core/com/mongodb/client/model/Updates.html).
 
-## Delete
+## Eliminar
 
-Now, let's explore one final CRUD operation: delete. We'll start by exploring how to delete a single document. To do this, we'll
-use `findOneAndDelete` instead of `deleteOne`. As an added benefit, this also returns the deleted document as output. In our example, we delete the
-restaurant:
+Ahora, exploremos una operación CRUD final: eliminar. Comenzaremos explorando cómo eliminar un solo documento. Para hacer esto,
+usaremos `findOneAndDelete` en lugar de `deleteOne`. Como beneficio adicional, esto también devuelve el documento eliminado como salida. En nuestro ejemplo, eliminamos el
+restaurante:
 
 ```kotlin
 val collection = db.getCollection<Restaurant>(collectionName = "restaurants")
@@ -463,8 +441,8 @@ collection.findOneAndDelete(filter = queryParams).also {
 
 ![delete output](https://images.contentstack.io/v3/assets/blt39790b633ee0d5a7/blta4bb9c39c2356306/6489bf30352ac64eebda33c6/Screenshot_2023-06-14_at_14.21.37.png)
 
-To delete multiple documents, we can use `deleteMany`. We can, for example, use this to delete all the data we created earlier with our create
-operation.
+Para eliminar múltiples documentos, podemos usar `deleteMany`. Podemos, por ejemplo, usar esto para eliminar todos los datos que creamos anteriormente con nuestra operación
+de creación.
 
 ```kotlin
 suspend fun deleteRestaurants(db: MongoDatabase) {
@@ -482,10 +460,10 @@ suspend fun deleteRestaurants(db: MongoDatabase) {
 }
 ```
 
-## Summary
+## Resumen
 
-Congratulations! You now know how to set up your first Kotlin application with MongoDB and perform CRUD operations. The complete source code of the
-app can be found on [GitHub](https://github.com/mongodb-developer/kotlin-driver-quick-start).
+¡Felicidades! Ahora sabes cómo configurar tu primera aplicación Kotlin con MongoDB y realizar operaciones CRUD. El código fuente completo de la
+aplicación se puede encontrar en [GitHub](https://github.com/mongodb-developer/kotlin-driver-quick-start).
 
-If you have any feedback on your experience working with the MongoDB Kotlin driver, please submit a comment in our
-user [feedback portal](https://feedback.mongodb.com/) or reach out to me on Twitter: [@codeWithMohit](https://twitter.com/codeWithMohit).
+Si tienes algún comentario sobre tu experiencia trabajando con el driver de MongoDB para Kotlin, por favor envía un comentario en nuestro
+[portal de comentarios](https://feedback.mongodb.com/) de usuarios o contáctame en Twitter: [@codeWithMohit](https://twitter.com/codeWithMohit).

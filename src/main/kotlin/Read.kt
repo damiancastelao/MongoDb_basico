@@ -1,3 +1,6 @@
+// Read.kt
+// Ejemplos de operaciones de lectura: buscar uno, buscar con filtros, paginación e índices
+
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Filters.eq
 import com.mongodb.client.model.IndexOptions
@@ -18,6 +21,7 @@ fun main() {
     }
 }
 
+// Lee cualquier documento (el primero que encuentre)
 suspend fun readAnyDocument(database: MongoDatabase) {
     val collection = database.getCollection<Restaurant>(collectionName = "restaurants")
     collection.find<Restaurant>().limit(1).collect {
@@ -25,6 +29,7 @@ suspend fun readAnyDocument(database: MongoDatabase) {
     }
 }
 
+// Lee documentos que coincidan con filtros específicos (Cocina Americana en Queens)
 suspend fun readSpecificDocument(database: MongoDatabase) {
     val collection = database.getCollection<Restaurant>(collectionName = "restaurants")
     val queryParams = Filters
@@ -38,13 +43,14 @@ suspend fun readSpecificDocument(database: MongoDatabase) {
 
     collection
         .find<Restaurant>(queryParams)
-        .limit(2)
+        .limit(2) // Limita a 2 resultados
         .collect {
             println(it)
         }
 
 }
 
+// Ejemplo de paginación usando skip (offset) y limit (pageSize)
 suspend fun readWithPaging(database: MongoDatabase, offset: Int, pageSize: Int) {
     val collection = database.getCollection<Restaurant>(collectionName = "restaurants")
     val queryParams = Filters
@@ -64,8 +70,11 @@ suspend fun readWithPaging(database: MongoDatabase, offset: Int, pageSize: Int) 
         }
 }
 
+// Crea un índice para mejorar el rendimiento y realiza una consulta usándolo
 suspend fun readWithIndex(database: MongoDatabase) {
     val collection = database.getCollection<Restaurant>(collectionName = "restaurants")
+    
+    // Configura y crea el índice en 'restaurant_id'
     val options = IndexOptions().apply {
         this.name("restaurant_id_index")
         this.background(true)
@@ -79,6 +88,7 @@ suspend fun readWithIndex(database: MongoDatabase) {
     val filters = Filters.gte("restaurant_id", "40000000")
     val sort = Sorts.ascending("restaurant_id")
 
+    // Consulta usando el índice explícitamente (hintString)
     collection
         .find(filter = filters)
         .sort(sort = sort)
@@ -88,9 +98,3 @@ suspend fun readWithIndex(database: MongoDatabase) {
             println(it)
         }
 }
-
-
-
-
-
-

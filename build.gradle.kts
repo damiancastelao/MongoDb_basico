@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-    implementation("org.mongodb:mongodb-driver-kotlin-coroutine:4.10.1")
+    implementation("org.mongodb:mongodb-driver-kotlin-coroutine:5.6.2")
     implementation("org.slf4j:slf4j-simple:1.7.9")
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
 
